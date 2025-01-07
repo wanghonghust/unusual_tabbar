@@ -13,8 +13,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.light(),
-      themeMode: ThemeMode.light,
+      theme: ThemeData.dark(),
+      themeMode: ThemeMode.dark,
       home: const Scaffold(
         body: TabDemoPage(),
       ),
@@ -93,7 +93,8 @@ class TabDemoPageState extends State<TabDemoPage>
             controller: sideController,
             items: _items,
             footItems: _footItems,
-            showToggleButton: false,
+            showToggleButton: true,
+            extendedWidth: 200,
           ),
           Expanded(
               child: Column(
@@ -144,7 +145,7 @@ class TabDemoPageState extends State<TabDemoPage>
         onPressed: () {},
         child: const Icon(
           Icons.add,
-          size: 42,
+          size: 60,
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -221,96 +222,40 @@ class _SideMenuState extends State<SideMenu>
         builder: (context, child) {
           final width = Tween<double>(
             begin: widget.extendedWidth,
-            end: 0,
-          ).evaluate(widget.controller.animation);
-          return Card(
-              margin: const EdgeInsets.all(0),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(0)),
-              child: SizedBox(
-                width: width,
-                child: Column(
-                  children: [
-                    Expanded(
-                        child: Column(
+            end: 60,
+          )
+          .evaluate(widget.controller.animation);
+          return Visibility(
+              // visible: width > 60,
+              child: Card(
+                  margin: const EdgeInsets.all(0),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0)),
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: width),
+                    child: Column(
                       children: [
                         Expanded(
-                            child: ListView.builder(
-                          itemCount: widget.items.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              height: widget.itemHeight,
-                              decoration: BoxDecoration(
-                                color: widget.controller.selectedIndex == index
-                                    ? Theme.of(context).primaryColor
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              margin: const EdgeInsets.all(5),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(10),
-                                onTap: () => setState(() {
-                                  widget.controller.selectIndex(index);
-                                }),
-                                child: Container(
-                                  padding: const EdgeInsets.all(5),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        widget.controller.extended
-                                            ? MainAxisAlignment.start
-                                            : MainAxisAlignment.center,
-                                    children: [
-                                      if (widget.controller.extended)
-                                      Container(
-                                        alignment: Alignment.center,
-                                        child: widget.items[index].icon!,
-                                      ),
-                                      if (widget.controller.extended)
-                                        Expanded(
-                                          child: Container(
-                                              margin: const EdgeInsets.only(
-                                                  left: 10),
-                                              child: widget.items[index].title),
-                                        )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        )),
-                        Container(
-                          constraints: const BoxConstraints(
-                            maxHeight: 120,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border(
-                                top: BorderSide(
-                                    color: Theme.of(context).hoverColor)),
-                          ),
-                          child: ListView.builder(
-                              reverse: true,
-                              itemCount: widget.footItems!.length,
+                            child: Column(
+                          children: [
+                            Expanded(
+                                child: ListView.builder(
+                              itemCount: widget.items.length,
                               itemBuilder: (context, index) {
                                 return Container(
                                   height: widget.itemHeight,
                                   decoration: BoxDecoration(
-                                    color: (widget.controller.selectedIndex -
-                                                widget.items.length) ==
-                                            widget.footItems!.length - 1 - index
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.transparent,
+                                    color:
+                                        widget.controller.selectedIndex == index
+                                            ? Theme.of(context).primaryColor
+                                            : Colors.transparent,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   margin: const EdgeInsets.all(5),
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(10),
                                     onTap: () => setState(() {
-                                      widget.controller.selectIndex(
-                                          widget.items.length +
-                                              widget.footItems!.length -
-                                              index -
-                                              1);
+                                      widget.controller.selectIndex(index);
                                     }),
                                     child: Container(
                                       padding: const EdgeInsets.all(5),
@@ -320,15 +265,9 @@ class _SideMenuState extends State<SideMenu>
                                                 ? MainAxisAlignment.start
                                                 : MainAxisAlignment.center,
                                         children: [
-                                          if (widget.controller.extended)
                                           Container(
                                             alignment: Alignment.center,
-                                            child: widget
-                                                .footItems![
-                                                    widget.footItems!.length -
-                                                        1 -
-                                                        index]
-                                                .icon!,
+                                            child: widget.items[index].icon!,
                                           ),
                                           if (widget.controller.extended)
                                             Expanded(
@@ -336,34 +275,105 @@ class _SideMenuState extends State<SideMenu>
                                                   margin: const EdgeInsets.only(
                                                       left: 10),
                                                   child: widget
-                                                      .footItems![widget
-                                                              .footItems!
-                                                              .length -
-                                                          1 -
-                                                          index]
-                                                      .title),
+                                                      .items[index].title),
                                             )
                                         ],
                                       ),
                                     ),
                                   ),
                                 );
-                              }),
-                        )
+                              },
+                            )),
+                            Container(
+                              constraints: const BoxConstraints(
+                                maxHeight: 120,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    top: BorderSide(
+                                        color: Theme.of(context).hoverColor)),
+                              ),
+                              child: ListView.builder(
+                                  reverse: true,
+                                  itemCount: widget.footItems!.length,
+                                  itemBuilder: (context, index) {
+                                    return Container(
+                                      height: widget.itemHeight,
+                                      decoration: BoxDecoration(
+                                        color:
+                                            (widget.controller.selectedIndex -
+                                                        widget.items.length) ==
+                                                    widget.footItems!.length -
+                                                        1 -
+                                                        index
+                                                ? Theme.of(context).primaryColor
+                                                : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      margin: const EdgeInsets.all(5),
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(10),
+                                        onTap: () => setState(() {
+                                          widget.controller.selectIndex(
+                                              widget.items.length +
+                                                  widget.footItems!.length -
+                                                  index -
+                                                  1);
+                                        }),
+                                        child: Container(
+                                          padding: const EdgeInsets.all(5),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                widget.controller.extended
+                                                    ? MainAxisAlignment.start
+                                                    : MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.center,
+                                                child: widget
+                                                    .footItems![widget
+                                                            .footItems!.length -
+                                                        1 -
+                                                        index]
+                                                    .icon!,
+                                              ),
+                                              if (widget.controller.extended)
+                                                Expanded(
+                                                  child: Container(
+                                                      margin:
+                                                          const EdgeInsets.only(
+                                                              left: 10),
+                                                      child: widget
+                                                          .footItems![widget
+                                                                  .footItems!
+                                                                  .length -
+                                                              1 -
+                                                              index]
+                                                          .title),
+                                                )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            )
+                          ],
+                        )),
+                        if (widget.showToggleButton!)
+                          IconButton(
+                            onPressed: () {
+                              widget.controller.toggleExtended();
+                            },
+                            icon: Icon(
+                              widget.controller.extended
+                                  ? Icons.close
+                                  : Icons.menu,
+                            ),
+                          ),
                       ],
-                    )),
-                    if (widget.showToggleButton!)
-                      IconButton(
-                        onPressed: () {
-                          widget.controller.toggleExtended();
-                        },
-                        icon: Icon(
-                          widget.controller.extended ? Icons.close : Icons.menu,
-                        ),
-                      ),
-                  ],
-                ),
-              ));
+                    ),
+                  )));
         });
   }
 }
